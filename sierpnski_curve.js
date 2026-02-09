@@ -1,14 +1,17 @@
 import { createPlotter, display, screen } from "./canvas.js";
 
 const rules = {
-  "F": "F+F-F-F+F",
+  A: "B-A-B",
+  B: "A+B+A",
   "+": "+",
   "-": "-",
 };
 
+const plotter = createPlotter(screen.width - 300, screen.height - 1, 60);
+
 const generatePattern = () => {
-  let pattern = "F";
-  for (let j = 1; j < 5; j++) {
+  let pattern = "A";
+  for (let j = 1; j < 7; j++) {
     let newpattern = "";
     for (let i = 0; i < pattern.length; i++) {
       newpattern += rules[pattern[i]];
@@ -18,8 +21,6 @@ const generatePattern = () => {
 
   return pattern;
 };
-
-const plotter = createPlotter(screen.width - 1, screen.height - 1, 180);
 
 const toRadian = (angle) => angle * 0.01745;
 
@@ -34,18 +35,20 @@ const drawLineSegment = (l) => {
   }
 };
 
-function turnLeft(angle) {
-  plotter.angle -= angle;
+
+function turnLeft() {
+  plotter.angle -= 60;
 }
 
-function turnRight(angle) {
-  plotter.angle += angle;
+function turnRight() {
+  plotter.angle += 60;
 }
 
 const actions = {
-  "F": () => drawLineSegment(3),
-  "+": () => turnLeft(90),
-  "-": () => turnRight(90),
+  A: () => drawLineSegment(2),
+  B: () => drawLineSegment(2),
+  "+": turnLeft,
+  "-": turnRight,
 };
 
 function drawPattern(pattern) {
@@ -56,6 +59,7 @@ function drawPattern(pattern) {
 
 function main() {
   const pattern = generatePattern();
+  // console.log(pattern);
   drawPattern(pattern);
   display();
 }

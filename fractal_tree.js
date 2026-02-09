@@ -1,17 +1,19 @@
 import { createPlotter, display, screen } from "./canvas.js";
 
 const rules = {
-  1: "11",
-  0: "1[0]0",
+  'X': "F+[[X]-X]-F[-FX]+X",
+  'F': "FF",
   "[": "[",
   "]": "]",
+  '+': '+',
+  '-': '-'
 };
 
-const plotter = createPlotter(screen.width / 2, screen.height - 1, 90);
+const plotter = createPlotter(100, screen.height - 1, 30);
 
 const generatePattern = () => {
-  let pattern = "0";
-  for (let j = 1; j < 6; j++) {
+  let pattern = "-X";
+  for (let j = 1; j < 5; j++) {
     let newpattern = "";
     for (let i = 0; i < pattern.length; i++) {
       newpattern += rules[pattern[i]];
@@ -25,46 +27,57 @@ const generatePattern = () => {
 const toRadian = (angle) => angle * 0.01745;
 
 const drawLineSegment = (l) => {
+  const x = Math.cos(toRadian(plotter.angle));
+  const y = Math.sin(toRadian(plotter.angle));
   for (let i = 0; i < l; i++) {
-    const x = Math.round(Math.cos(toRadian(plotter.angle)));
-    const y = Math.round(Math.sin(toRadian(plotter.angle)));
     plotter.x += x;
     plotter.y -= y;
-
-    screen.pixels[plotter.y][plotter.x] = "\x1B[40m  \x1B[0m";
+    screen.pixels
+    [Math.round(plotter.y)][Math.round(plotter.x)] = "\x1B[40m  \x1B[0m";
   }
 };
 
 const prevPos = [];
 
-function turnLeft() {
+function push() {
   prevPos.push({ ...plotter });
-  plotter.angle -= 45;
 }
 
-function turnRight() {
+function pop() {
   const backTo = prevPos.pop();
   plotter.x = backTo.x;
   plotter.y = backTo.y;
   plotter.angle = backTo.angle;
-  plotter.angle += 45;
+  // plotter.angle += 25;
+}
+
+function turnLeft() {
+  plotter.angle -= 25;
+}
+
+function turnRight() {
+  plotter.angle += 25;
 }
 
 const actions = {
-  0: () => drawLineSegment(2),
-  1: () => drawLineSegment(3),
-  "[": turnLeft,
-  "]": turnRight,
+  'X': () => drawLineSegment(3),
+  'F': () => drawLineSegment(4),
+  "[": push,
+  "]": pop,
+  '+': turnLeft,
+  '-': turnRight
 };
 
 function drawPattern(pattern) {
   pattern.split("").forEach((each) => {
+    // console.log(each);
     actions[each]();
   });
 }
 
 function main() {
   const pattern = generatePattern();
+  // console.log(pattern);
   drawPattern(pattern);
   display();
 }
