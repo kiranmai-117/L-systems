@@ -33,7 +33,7 @@ const drawLineSegment = (l) => {
     plotter.x += x;
     plotter.y -= y;
     screen.pixels
-    [Math.round(plotter.y)][Math.round(plotter.x)] = "\x1B[40m  \x1B[0m";
+    [Math.round(plotter.y)][Math.round(plotter.x)] = "\x1B[44m  \x1B[0m";
   }
 };
 
